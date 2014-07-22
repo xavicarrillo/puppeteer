@@ -4,7 +4,6 @@
 
 """
 Simple puppetdb client
-It uses the pypuppetdb library: https://github.com/nedap/pypuppetdb
 """
 
 __title__   = "puppeteer.py"
@@ -21,9 +20,10 @@ usage = """
 Use --help to view options
 """
 
-from pypuppetdb import connect
+from pypuppetdb import connect # https://github.com/nedap/pypuppetdb
 from optparse import OptionParser
-import sys
+from datetime import timedelta
+import sys, datetime
 
 def main():
 
@@ -31,20 +31,36 @@ def main():
   #parser.add_option("-l", "--list", help="Get the list of all nodes")
   parser.add_option("-f", "--facts", type="string", action="store", dest="facts",
   help="Get fact from given node")
+  parser.add_option("-o", "--outofsync", action="store", dest="outofsync", default="30",
+  help="Get the list of out of sync nodes (30 min without sending a report). Minutes can be passed as a parameter ")
   (options, args) = parser.parse_args()
   
   factsout = ""
   db = connect()
-  #if options.list:
   nodes = db.nodes()
 
   if options.facts:
     facts = options.facts.split(',')
     for node in nodes:
       for fact in facts:
-        factsout = factsout + " " + node.fact(fact).value
+        try:
+          factsout = factsout + " " + node.fact(fact).value
+        except:
+          factsout = None
+
       print '%s: %s' %(node,factsout)
       factsout = ""
+
+  if options.outofsync:
+    # there is 2 hours difference because of the timezone. So instead of dealing with pytz we use this workaround
+    deltaminutes = 120
+    now = datetime.datetime.now()
+    delta = timedelta(minutes=int(deltaminutes))
+    for node in nodes:
+      lastcatalog= now - node.catalog_timestamp.replace(tzinfo=None) - delta
+      minutes = lastcatalog.seconds / 60
+      if minutes > int(options.outofsync):
+        print '%s has not sent a report wthin the last %s minutes' %(node.name,minutes)
 
   sys.exit(0)
 
