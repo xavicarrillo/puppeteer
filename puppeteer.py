@@ -57,10 +57,13 @@ def main():
     now = datetime.datetime.now()
     delta = timedelta(minutes=int(deltaminutes))
     for node in nodes:
-      lastcatalog= now - node.catalog_timestamp.replace(tzinfo=None) - delta
-      minutes = lastcatalog.seconds / 60
+      try:
+        lastcatalog = now - node.catalog_timestamp.replace(tzinfo=None) - delta
+        minutes = lastcatalog.seconds / 60
+      except:
+        minutes = None
       if minutes > int(options.outofsync):
-        print '%s has not sent a report wthin the last %s minutes' %(node.name,minutes)
+        print '%s has not sent a report within the last %s minutes' %(node.name,minutes)
 
   sys.exit(0)
 
