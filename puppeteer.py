@@ -10,15 +10,8 @@ __title__   = "puppeteer.py"
 __version__ = "0.3"
 __author__  = "Xavi Carrillo"
 __email__   = "xcarrillo at gmail dot com"
-__licence__ ="""
-  Copyright (c) 2014 Xavi Carrillo
-  License: MIT
-"""
-
-usage = """
-%prog [options]
-Use --help to view options
-"""
+__licence__ = "Copyright (c) 2014 Xavi Carrillo. License: MIT"
+__usage__   = "%prog [options] \nUse --help to view options"
 
 from pypuppetdb import connect # https://github.com/nedap/pypuppetdb
 from optparse import OptionParser
@@ -27,14 +20,17 @@ import sys, datetime
 
 def main():
 
-  parser = OptionParser(usage, version=__version__)
+  parser = OptionParser(usage=__usage__, version=__version__)
   parser.add_option("-l", "--list", action='store_true', dest='list', help="Get the list of all nodes")
-  parser.add_option("-f", "--facts", type="string", action="store", dest="facts",
-  help="Get fact from given node")
-  parser.add_option("-o", "--outofsync", action="store", dest="outofsync", default="30",
-  help="Get the list of out of sync nodes (30 min without sending a report). Minutes can be passed as a parameter ")
+  parser.add_option("-f", type="string", action="store", dest="facts",
+  help="Get fact value from all nodes. Can be as many as you want, comma separated")
+  parser.add_option("-o", action="store", dest="outofsync", default="30",
+  help="Get list of out of sync nodes (30 min without sending a report). Number of mins can be passed as a parameter")
   (options, args) = parser.parse_args()
-  
+  if len(sys.argv)==1:
+    print __usage__
+    sys.exit(1)
+
   factsout  = ""
   db        = connect()
   nodes     = db.nodes()
