@@ -7,7 +7,7 @@ Simple puppetdb client
 """
 
 __title__   = "puppeteer.py"
-__version__ = "0.1"
+__version__ = "0.2"
 __author__  = "Xavi Carrillo"
 __email__   = "xcarrillo at gmail dot com"
 __licence__ ="""
@@ -35,24 +35,38 @@ def main():
   help="Get the list of out of sync nodes (30 min without sending a report). Minutes can be passed as a parameter ")
   (options, args) = parser.parse_args()
   
-  factsout = ""
-  db = connect()
-  nodes = db.nodes()
+  factsout  = ""
+  db        = connect()
+  nodes     = db.nodes()
 
   if options.facts:
     facts = options.facts.split(',')
     for node in nodes:
       for fact in facts:
         try:
-          factsout = factsout + " " + node.fact(fact).value
+          if '=' in fact:
+            factarray= fact.split('=')
+            fact=factarray[0]
+            #print type(fact)
+            if node.fact(fact).value == factarray[1]:
+              print node
+          else:
+            factsout = factsout + " " + node.fact(fact).value
         except:
-          factsout = None
+          print "Unexpected error:", sys.exc_info()[0]
+          raise
 
-      print '%s: %s' %(node,factsout)
-      factsout = ""
+      if factsout != "": # If there is an array of facts, print out all nodes, and the value of the facts
+        try:
+          print '%s: %s' %(node,factsout)
+          factsout = ""
+        except:
+          print "Unexpected error:", sys.exc_info()[0]
+          raise
+
 
   if options.outofsync:
-    # there is 2 hours difference because of the timezone. So instead of dealing with pytz we use this workaround
+    # there are 2 hours difference because of the timezone. So instead of dealing with pytz we use this workaround
     deltaminutes = 120
     now = datetime.datetime.now()
     delta = timedelta(minutes=int(deltaminutes))
