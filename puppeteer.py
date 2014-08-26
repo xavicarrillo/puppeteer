@@ -7,7 +7,7 @@ Simple puppetdb client
 """
 
 __title__   = "puppeteer.py"
-__version__ = "0.2"
+__version__ = "0.3"
 __author__  = "Xavi Carrillo"
 __email__   = "xcarrillo at gmail dot com"
 __licence__ ="""
@@ -28,7 +28,7 @@ import sys, datetime
 def main():
 
   parser = OptionParser(usage, version=__version__)
-  #parser.add_option("-l", "--list", help="Get the list of all nodes")
+  parser.add_option("-l", "--list", action='store_true', dest='list', help="Get the list of all nodes")
   parser.add_option("-f", "--facts", type="string", action="store", dest="facts",
   help="Get fact from given node")
   parser.add_option("-o", "--outofsync", action="store", dest="outofsync", default="30",
@@ -38,6 +38,11 @@ def main():
   factsout  = ""
   db        = connect()
   nodes     = db.nodes()
+
+  if options.list:
+    for node in nodes:
+      print node
+    sys.exit(0)
 
   if options.facts:
     facts = options.facts.split(',')
