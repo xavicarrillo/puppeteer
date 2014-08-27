@@ -3,7 +3,7 @@
 #
 
 """
-Simple puppetdb client
+PuppetDB client, that uses the PyPuppetDB library (https://github.com/nedap/pypuppetdb)
 """
 
 __title__   = "puppeteer.py"
@@ -16,7 +16,7 @@ __usage__   = """
 Use --help to view options
 Example:  python puppeteer.py -f operatingsystem=CentOS,operatingsystemrelease=6.5,puppetversion=3.6.2
 """
-from pypuppetdb import connect # https://github.com/nedap/pypuppetdb
+from pypuppetdb import connect
 from optparse import OptionParser
 from datetime import timedelta
 import sys, datetime
