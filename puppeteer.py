@@ -7,12 +7,15 @@ Simple puppetdb client
 """
 
 __title__   = "puppeteer.py"
-__version__ = "0.3"
+__version__ = "0.5"
 __author__  = "Xavi Carrillo"
 __email__   = "xcarrillo at gmail dot com"
 __licence__ = "Copyright (c) 2014 Xavi Carrillo. License: MIT"
-__usage__   = "%prog [options] \nUse --help to view options"
-
+__usage__   = """
+%prog [options]
+Use --help to view options
+Example:  python puppeteer.py -f operatingsystem=CentOS,operatingsystemrelease=6.5,puppetversion=3.6.2
+"""
 from pypuppetdb import connect # https://github.com/nedap/pypuppetdb
 from optparse import OptionParser
 from datetime import timedelta
@@ -43,21 +46,28 @@ def main():
   if options.facts:
     facts = options.facts.split(',')
     for node in nodes:
+      matchfacts    = 0
+      factlistindex = -1 
       for fact in facts:
+        factlistindex += 1
         try:
+          # If the user gives a value to the fact...
           if '=' in fact:
             factarray= fact.split('=')
             fact=factarray[0]
-            #print type(fact)
             if node.fact(fact).value == factarray[1]:
-              print node
+              matchfacts +=1
           else:
             factsout = factsout + " " + node.fact(fact).value
         except:
           print "Unexpected error:", sys.exc_info()[0]
           raise
+      if matchfacts == len(facts):
+        # Good! all the given facts have the desired value on this node
+        print node
 
-      if factsout != "": # If there is an array of facts, print out all nodes, and the value of the facts
+      if factsout != "": # If there is an array of facts, it means that the user didn't pass a value for the fact,
+                         # so we print out all nodes, and the value of the facts
         try:
           print '%s: %s' %(node,factsout)
           factsout = ""
