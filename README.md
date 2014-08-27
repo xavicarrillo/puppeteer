@@ -1,6 +1,6 @@
 # puppeteer
 
-Simple puppetdb wrapper, written in python
+PuppetDB client, that uses the PyPuppetDB library (https://github.com/nedap/pypuppetdb)
 
 ## Examples
 * Get the list of all nodes:
