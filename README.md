@@ -13,7 +13,7 @@ python puppeteer.py --list
 python puppeteer.py -f operatingsystem=CentOS,operatingsystemrelease=6.5,puppetversion=3.6.2
 ```
 
-* Get the list of Out-of-sync nodes, which have not sent a report in the last 60 minutes:
+* Get the list of Out-Of-Sync nodes, which have not sent a report in the last 60 minutes:
 ```
 python puppeteer.py -o 60
 ```
