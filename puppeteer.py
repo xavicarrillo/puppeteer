@@ -34,9 +34,8 @@ def main():
     print __usage__
     sys.exit(1)
 
-  factsout  = ""
-  db        = connect()
-  nodes     = db.nodes()
+  db    = connect()
+  nodes = db.nodes()
 
   if options.list:
     for node in nodes:
@@ -44,7 +43,8 @@ def main():
     sys.exit(0)
 
   if options.facts:
-    facts = options.facts.split(',')
+    facts     = options.facts.split(',')
+    factsout  = ""
     for node in nodes:
       matchfacts    = 0
       factlistindex = -1 
@@ -74,7 +74,6 @@ def main():
         except:
           print "Unexpected error:", sys.exc_info()[0]
           raise
-
 
   if options.outofsync:
     # there are 2 hours difference because of the timezone. So instead of dealing with pytz we use this workaround
